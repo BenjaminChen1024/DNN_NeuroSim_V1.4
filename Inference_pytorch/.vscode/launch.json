@@ -1,0 +1,65 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python 调试程序: 当前文件",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/Inference_pytorch/NeuroSIM",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+
+        {
+            "name": "C++ Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/Inference_pytorch/NeuroSIM/main",
+            "args": [
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/Inference_pytorch/NeuroSIM/NetWork_VGG8.csv",
+                "8",
+                "8",
+                "128",
+                "128",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/weightConv0_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/inputConv0_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/weightConv1_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/inputConv1_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/weightConv3_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/inputConv3_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/weightConv4_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/inputConv4_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/weightConv6_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/inputConv6_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/weightConv7_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/inputConv7_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/weightFC0_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/inputFC0_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/weightFC1_average.csv",
+                "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/layer_record_VGG8/inputFC1_average.csv"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Test",
+                    "text": "python import sys;sys.path.insert(0, '/usr/share/gcc/python');from libstdcxx.v6.printers import register_libstdcxx_printers;register_libstdcxx_printers(None)",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build",
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}
