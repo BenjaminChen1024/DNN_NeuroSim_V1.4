@@ -10,7 +10,7 @@
                 "isDefault": true
             },
             "options": {
-                "cwd": "/home/lenovo/Code/GitClone/DNN_NeuroSim_V1.4/Inference_pytorch/NeuroSIM"
+                "cwd": "/home/lenovo/Code/GitRepo/DNN_NeuroSim_V1.4/Inference_pytorch/NeuroSIM"
             },
             "problemMatcher": "$gcc"
         }

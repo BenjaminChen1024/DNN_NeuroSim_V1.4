@@ -38,7 +38,7 @@ parser.add_argument('--inference', type=int, default=0, help='run hardware infer
 parser.add_argument('--subArray', type=int, default=128, help='size of subArray (e.g. 128*128)')
 parser.add_argument('--parallelRead', type=int, default=128, help='number of rows read in parallel (<= subArray e.g. 32)')
 parser.add_argument('--ADCprecision', type=int, default=5, help='ADC precision (e.g. 5-bit)')
-parser.add_argument('--cellBit', type=int, default=1, help='cell precision (e.g. 4-bit/cell)')
+parser.add_argument('--cellBit', type=int, default=2, help='cell precision (e.g. 4-bit/cell)')
 parser.add_argument('--onoffratio', type=float, default=10, help='device on/off ratio (e.g. Gmax/Gmin = 3)')
 # if do not run the device retention / conductance variation effects, set vari=0, v=0
 parser.add_argument('--vari', type=float, default=0., help='conductance variation (e.g. 0.1 standard deviation to generate random variation)')

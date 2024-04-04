@@ -58,7 +58,7 @@ Param::Param() {
 	operationmode = 2;     		// 1: conventionalSequential (Use several multi-bit RRAM as one synapse)
 								// 2: conventionalParallel (Use several multi-bit RRAM as one synapse)
 
-	memcelltype = 1;        	// 1: cell.memCellType = Type::SRAM
+	memcelltype = 2;        	// 1: cell.memCellType = Type::SRAM
 								// 2: cell.memCellType = Type::RRAM
 								// 3: cell.memCellType = Type::FeFET
 	
@@ -103,7 +103,7 @@ Param::Param() {
 	currentMode = true;         // false: MLSA use VSA
 	                            // true: MLSA use CSA
 	
-	pipeline = true;            // false: layer-by-layer process --> huge leakage energy in HP
+	pipeline = false;            // false: layer-by-layer process --> huge leakage energy in HP
 								// true: pipeline process
 	speedUpDegree = 8;          // 1 = no speed up --> original speed
 								// 2 and more : speed up ratio, the higher, the faster
@@ -256,7 +256,7 @@ Param::Param() {
 	}
 	
 	levelOutput = 32;                   // # of levels of the multilevelSenseAmp output, should be in 2^N forms; e.g. 32 levels --> 5-bit ADC
-	cellBit = 1;                        // precision of memory device 
+	cellBit = 2;                        // precision of memory device 
 	// 1.4 update: dummy column sharing - how many senseamplfiers share one dummny columns?
 	// dummy column sharing should not be high, since it could change the column cap of the dummy column.
 	// In order for the dummy column to serve as a reference, the column caps of the dummy & main column should be matched closely
@@ -341,8 +341,13 @@ Param::Param() {
 	heightInFeatureSizeCrossbar = 2;    // Crossbar Cell height in feature size
 	widthInFeatureSizeCrossbar = 2;     // Crossbar Cell width in feature size
 	
-	resistanceOn = 100e3; // 6e3;               // Ron resistance at Vr in the reported measurement data (need to recalculate below if considering the nonlinearity)
-	resistanceOff = 100e3*17;// 6e3*17;           // Roff resistance at Vr in the reported measurement dat (need to recalculate below if considering the nonlinearity)
+	// resistanceOn = 100e3; // 6e3;               // Ron resistance at Vr in the reported measurement data (need to recalculate below if considering the nonlinearity)
+	// resistanceOff = 100e3*17;// 6e3*17;           // Roff resistance at Vr in the reported measurement dat (need to recalculate below if considering the nonlinearity)
+	
+	// 2024.3.27 update // Use original parameter
+	resistanceOn = 6e3;               // Ron resistance at Vr in the reported measurement data (need to recalculate below if considering the nonlinearity)
+	resistanceOff = 6e3*150;           // Roff resistance at Vr in the reported measurement dat (need to recalculate below if considering the nonlinearity)
+
 	maxConductance = (double) 1/resistanceOn;
 	minConductance = (double) 1/resistanceOff;
 	
