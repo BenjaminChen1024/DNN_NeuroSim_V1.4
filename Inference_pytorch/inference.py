@@ -16,8 +16,8 @@ from utee import hook
 from datetime import datetime
 from subprocess import call
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
-parser.add_argument('--dataset', default='cifar10', help='cifar10|cifar100|imagenet')
-parser.add_argument('--model', default='VGG8', help='VGG8|DenseNet40|ResNet18')
+parser.add_argument('--dataset', default='imagenet', help='cifar10|cifar100|imagenet')
+parser.add_argument('--model', default='ResNet18', help='VGG8|DenseNet40|ResNet18')
 parser.add_argument('--mode', default='WAGE', help='WAGE|FP')
 parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training (default: 64)')
 parser.add_argument('--epochs', type=int, default=200, help='number of epochs to train (default: 10)')
@@ -91,7 +91,7 @@ elif args.model == 'DenseNet40':
 elif args.model == 'ResNet18':
     from models import ResNet
     # FP mode pretrained model, loaded from 'https://download.pytorch.org/models/resnet18-5c106cde.pth'
-    # model_path = './log/xxx.pth'
+    model_path = './log/ResNet18.pth'
     # modelCF = ResNet.resnet18(args = args, logger=logger, pretrained = model_path)
     modelCF = ResNet.resnet18(args = args, logger=logger, pretrained = True)
 else:
