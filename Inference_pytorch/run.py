@@ -2,8 +2,8 @@ import argparse
 from subprocess import call
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
-parser.add_argument('--dataset', default='cifar10', help='cifar10|cifar100|imagenet')
-parser.add_argument('--model', default='VGG8', help='VGG8|DenseNet40|ResNet18')
+parser.add_argument('--dataset', default='imagenet', help='cifar10|cifar100|imagenet')
+parser.add_argument('--model', default='ResNet18', help='VGG8|DenseNet40|ResNet18')
 parser.add_argument('--mode', default='WAGE', help='WAGE|FP')
 parser.add_argument('--batch_size', type=int, default=500, help='input batch size for training (default: 64)')
 parser.add_argument('--epochs', type=int, default=200, help='number of epochs to train (default: 10)')

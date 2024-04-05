@@ -1,0 +1,48 @@
+=================FLAGS==================
+dataset: cifar10
+model: VGG8
+mode: WAGE
+batch_size: 64
+epochs: 200
+grad_scale: 8
+seed: 117
+log_interval: 100
+test_interval: 1
+logdir: /home/lenovo/Code/GitRepo/DNN_NeuroSim_V1.4/Inference_pytorch/log/default/ADCprecision=5/batch_size=64/cellBit=2/dataset=cifar10/decreasing_lr=140,180/detect=0/grad_scale=8/inference=0/lr=0.001/mode=WAGE/model=VGG8/onoffratio=10/parallelRead=128/seed=117/subArray=128/t=0/target=0/v=0/vari=0.0/wl_activate=8/wl_error=8/wl_grad=8/wl_weight=8
+lr: 0.001
+decreasing_lr: 140,180
+wl_weight: 8
+wl_grad: 8
+wl_activate: 8
+wl_error: 8
+inference: 0
+subArray: 128
+parallelRead: 128
+ADCprecision: 5
+cellBit: 2
+onoffratio: 10
+vari: 0.0
+t: 0
+v: 0
+detect: 0
+target: 0
+========================================
+decreasing_lr: [140, 180]
+training phase
+Train Epoch: 0 [6400/50000] Loss: 27.779053 Acc: 0.2344 lr: 1.00e-03
+Train Epoch: 0 [12800/50000] Loss: 27.057861 Acc: 0.3281 lr: 1.00e-03
+Train Epoch: 0 [19200/50000] Loss: 26.717255 Acc: 0.2031 lr: 1.00e-03
+Train Epoch: 0 [25600/50000] Loss: 26.772736 Acc: 0.2656 lr: 1.00e-03
+Train Epoch: 0 [32000/50000] Loss: 26.621521 Acc: 0.3750 lr: 1.00e-03
+Train Epoch: 0 [38400/50000] Loss: 25.835175 Acc: 0.3906 lr: 1.00e-03
+Train Epoch: 0 [44800/50000] Loss: 26.182404 Acc: 0.2656 lr: 1.00e-03
+Elapsed 44.06s, 44.06 s/epoch, 0.06 s/batch, ets 8767.05s
+testing phase
+	Epoch 0 Test set: Average loss: 24.9189, Accuracy: 3861/10000 (39%)
+Saving model to /home/lenovo/Code/GitRepo/DNN_NeuroSim_V1.4/Inference_pytorch/log/default/ADCprecision=5/batch_size=64/cellBit=2/dataset=cifar10/decreasing_lr=140,180/detect=0/grad_scale=8/inference=0/lr=0.001/mode=WAGE/model=VGG8/onoffratio=10/parallelRead=128/seed=117/subArray=128/t=0/target=0/v=0/vari=0.0/wl_activate=8/wl_error=8/wl_grad=8/wl_weight=8/best-0.pth
+training phase
+Train Epoch: 1 [6400/50000] Loss: 25.425720 Acc: 0.3750 lr: 1.00e-03
+Train Epoch: 1 [12800/50000] Loss: 24.671417 Acc: 0.5000 lr: 1.00e-03
+Train Epoch: 1 [19200/50000] Loss: 24.395203 Acc: 0.3594 lr: 1.00e-03
+Train Epoch: 1 [25600/50000] Loss: 23.774017 Acc: 0.4844 lr: 1.00e-03
+Train Epoch: 1 [32000/50000] Loss: 25.490784 Acc: 0.3594 lr: 1.00e-03

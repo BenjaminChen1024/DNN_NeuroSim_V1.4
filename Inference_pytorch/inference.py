@@ -25,7 +25,7 @@ parser.add_argument('--grad_scale', type=float, default=8, help='learning rate f
 parser.add_argument('--seed', type=int, default=117, help='random seed (default: 1)')
 parser.add_argument('--log_interval', type=int, default=100,  help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1,  help='how many epochs to wait before another test')
-parser.add_argument('--logdir', default='log/default', help='folder to save to the log')
+parser.add_argument('--logdir', default='log/ResNet18', help='folder to save to the log')
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate (default: 1e-3)')
 parser.add_argument('--decreasing_lr', default='140,180', help='decreasing strategy')
 parser.add_argument('--wl_weight', type=int, default=8)
@@ -93,7 +93,7 @@ elif args.model == 'ResNet18':
     # FP mode pretrained model, loaded from 'https://download.pytorch.org/models/resnet18-5c106cde.pth'
     model_path = './log/ResNet18.pth'
     # modelCF = ResNet.resnet18(args = args, logger=logger, pretrained = model_path)
-    modelCF = ResNet.resnet18(args = args, logger=logger, pretrained = True)
+    modelCF = ResNet.resnet18(args = args, logger=logger, pretrained = model_path)
 else:
     raise ValueError("Unknown model type")
 
