@@ -1,0 +1,1 @@
+./NeuroSIM/main ./NeuroSIM/NetWork_MobileNetV2.csv 8 8 128 128 

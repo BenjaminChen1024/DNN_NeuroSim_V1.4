@@ -1,3 +1,5 @@
+#_# Zeming 2024.4.5 Update: Skip the inference part to save time
+
 import argparse
 import os
 import time
@@ -16,9 +18,12 @@ from utee import hook
 from datetime import datetime
 from subprocess import call
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
-parser.add_argument('--dataset', default='imagenet', help='cifar10|cifar100|imagenet')
-parser.add_argument('--model', default='ResNet18', help='VGG8|DenseNet40|ResNet18')
-parser.add_argument('--mode', default='WAGE', help='WAGE|FP')
+parser.add_argument('--dataset', default='cifar10', help='cifar10|cifar100|imagenet')
+
+#_# Zeming 2024.4.5 Update: add MobileNetV2
+
+parser.add_argument('--model', default='VGG8', help='VGG8|DenseNet40|ResNet18|MobileNetV2')
+parser.add_argument('--mode', default='FP', help='WAGE|FP')
 parser.add_argument('--batch_size', type=int, default=100, help='input batch size for training (default: 64)')
 parser.add_argument('--epochs', type=int, default=1, help='number of epochs to train (default: 10)')
 parser.add_argument('--grad_scale', type=float, default=8, help='learning rate for wage delta calculation')
@@ -79,7 +84,7 @@ elif args.dataset == 'imagenet':
 else:
     raise ValueError("Unknown dataset type")
     
-assert args.model in ['VGG8', 'DenseNet40', 'ResNet18'], args.model
+assert args.model in ['VGG8', 'DenseNet40', 'ResNet18', 'MobileNetV2'], args.model
 if args.model == 'VGG8':
     from models import VGG
     model_path = './log/VGG8.pth'   # WAGE mode pretrained model
@@ -90,16 +95,18 @@ elif args.model == 'DenseNet40':
     modelCF = DenseNet.densenet40(args = args, logger=logger, pretrained = model_path)
 elif args.model == 'ResNet18':
     from models import ResNet
-    # FP mode pretrained model, loaded from 'https://download.pytorch.org/models/resnet18-5c106cde.pth'
     model_path = './log/ResNet18.pth'
-    # modelCF = ResNet.resnet18(args = args, logger=logger, pretrained = model_path)
     modelCF = ResNet.resnet18(args = args, logger=logger, pretrained = model_path)
+elif args.model == 'MobileNetV2':
+     from models import MobileNetV2
+     model_path = './log/MobileNetV2.pth'
+     modelCF = MobileNetV2.mobilenet_v2(args = args, logger=logger, pretrained = model_path)
 else:
     raise ValueError("Unknown model type")
 
 if args.cuda:
 	modelCF.cuda()
-
+print(modelCF)
 best_acc, old_file = 0, None
 t_begin = time.time()
 # ready to go
@@ -111,16 +118,6 @@ trained_with_quantization = True
 
 criterion = torch.nn.CrossEntropyLoss()
 # criterion = wage_util.SSE()
-
-# NOTE: Parallel read is not supported in inference accuracy simulation with multi-level cells yet
-if args.parallelRead < args.subArray and args.cellBit > 1:
-    logger('\n=====================================================================================')
-    logger('ERROR: Partial parallel read is not supported for multi-level cells yet!')
-    logger('Please make sure parallelRead == subArray when cellBit > 1.')
-    logger('We will support partial parallel for multi-level cells in DNN_NeuroSim V1.5 (to be released in Spring 2024).')
-    logger('Thank you for using NeuroSim! We appreciate your patience.')
-    logger('=====================================================================================\n')
-    exit()
 
 # for data, target in test_loader:
 for i, (data, target) in enumerate(test_loader):
@@ -139,28 +136,5 @@ for i, (data, target) in enumerate(test_loader):
     if i==0:
         hook.remove_hook_list(hook_handle_list)
     break
-
-# test_loss = test_loss / len(test_loader)  # average over number of mini-batch
-# acc = 100. * correct / len(test_loader.dataset)
-
-# accuracy = acc.cpu().data.numpy()
-
-# if args.inference:
-#     print(" --- Hardware Properties --- ")
-#     print("subArray size: ")
-#     print(args.subArray)
-#     print("parallel read: ")
-#     print(args.parallelRead)
-#     print("ADC precision: ")
-#     print(args.ADCprecision)
-#     print("cell precision: ")
-#     print(args.cellBit)
-#     print("on/off ratio: ")
-#     print(args.onoffratio)
-#     print("variation: ")
-#     print(args.vari)
-
-# logger('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
-# 	test_loss, correct, len(test_loader.dataset), acc))
 
 call(["/bin/bash", './layer_record_'+str(args.model)+'/trace_command.sh'])
