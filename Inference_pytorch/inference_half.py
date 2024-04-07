@@ -9,6 +9,8 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
+from torchsummary import summary
+
 from utee import make_path
 from utee import wage_util
 from models import dataset
@@ -18,11 +20,10 @@ from utee import hook
 from datetime import datetime
 from subprocess import call
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
-parser.add_argument('--dataset', default='cifar10', help='cifar10|cifar100|imagenet')
+parser.add_argument('--dataset', default='imagenet', help='cifar10|cifar100|imagenet')
 
 #_# Zeming 2024.4.5 Update: add MobileNetV2
-
-parser.add_argument('--model', default='VGG8', help='VGG8|DenseNet40|ResNet18|MobileNetV2')
+parser.add_argument('--model', default='MobileNetV2', help='VGG8|DenseNet40|ResNet18|MobileNetV2')
 parser.add_argument('--mode', default='FP', help='WAGE|FP')
 parser.add_argument('--batch_size', type=int, default=100, help='input batch size for training (default: 64)')
 parser.add_argument('--epochs', type=int, default=1, help='number of epochs to train (default: 10)')
@@ -30,7 +31,7 @@ parser.add_argument('--grad_scale', type=float, default=8, help='learning rate f
 parser.add_argument('--seed', type=int, default=117, help='random seed (default: 1)')
 parser.add_argument('--log_interval', type=int, default=100,  help='how many batches to wait before logging training status')
 parser.add_argument('--test_interval', type=int, default=1,  help='how many epochs to wait before another test')
-parser.add_argument('--logdir', default='log/ResNet18', help='folder to save to the log')
+parser.add_argument('--logdir', default='log/VGG8', help='folder to save to the log')
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate (default: 1e-3)')
 parser.add_argument('--decreasing_lr', default='140,180', help='decreasing strategy')
 parser.add_argument('--wl_weight', type=int, default=8)
@@ -83,7 +84,7 @@ elif args.dataset == 'imagenet':
     train_loader, test_loader = dataset.get_imagenet(batch_size=args.batch_size, num_workers=1)
 else:
     raise ValueError("Unknown dataset type")
-    
+
 assert args.model in ['VGG8', 'DenseNet40', 'ResNet18', 'MobileNetV2'], args.model
 if args.model == 'VGG8':
     from models import VGG
@@ -99,7 +100,7 @@ elif args.model == 'ResNet18':
     modelCF = ResNet.resnet18(args = args, logger=logger, pretrained = model_path)
 elif args.model == 'MobileNetV2':
      from models import MobileNetV2
-     model_path = './log/MobileNetV2.pth'
+     model_path = './log/MobileNetV2_V1.pth'
      modelCF = MobileNetV2.mobilenet_v2(args = args, logger=logger, pretrained = model_path)
 else:
     raise ValueError("Unknown model type")
@@ -107,6 +108,7 @@ else:
 if args.cuda:
 	modelCF.cuda()
 print(modelCF)
+summary(modelCF, (3, 224, 224))
 best_acc, old_file = 0, None
 t_begin = time.time()
 # ready to go

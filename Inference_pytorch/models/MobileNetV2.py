@@ -6,6 +6,7 @@ from modules.floatrange_cpu_np_infer import FConv2d, FLinear
 
 from torchvision.models._utils import _make_divisible
 from torch.hub import load_state_dict_from_url
+from torchsummary import torchsummary
 
 name=0
 __all__ = ["MobileNetV2", "MobileNet_V2_Weights", "mobilenet_v2"]
@@ -13,16 +14,16 @@ __all__ = ["MobileNetV2", "MobileNet_V2_Weights", "mobilenet_v2"]
 model_urls = {
     'mobilenetv2': 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth',}
 
-def Conv2d(in_planes, out_planes, kernel_size, stride, padding, args=None, logger=None):
+def Conv2d(in_planes, out_planes, kernel_size, stride, padding, groups=1, args=None, logger=None):
     """convolution"""
     global name
     if args.mode == "WAGE":        
-        conv2d = QConv2d(in_planes, out_planes, kernel_size, stride, padding, logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
+        conv2d = QConv2d(in_planes, out_planes, kernel_size, stride, padding, groups=groups, bias=False, logger=logger,wl_input = args.wl_activate,wl_activate=args.wl_activate,
                          wl_error=args.wl_error,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                          subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target,
                          name = 'Conv'+'_'+str(name)+'_', model = args.model, parallelRead=args.parallelRead)
     elif args.mode == "FP":
-        conv2d = FConv2d(in_planes, out_planes, kernel_size, stride, padding, bias=False,
+        conv2d = FConv2d(in_planes, out_planes, kernel_size, stride, padding, groups=groups, bias=False,
                          logger=logger,wl_input = args.wl_activate,wl_weight= args.wl_weight,inference=args.inference,onoffratio=args.onoffratio,cellBit=args.cellBit,
                          subArray=args.subArray,ADCprecision=args.ADCprecision,vari=args.vari,t=args.t,v=args.v,detect=args.detect,target=args.target, cuda=args.cuda,
                          name = 'Conv'+'_'+str(name)+'_' )
@@ -47,18 +48,24 @@ def Linear(in_planes, out_planes, args=None, logger=None):
     name += 1
     return linear
 
-def Conv2dNormActivation(in_channels, out_channels, kernel_size=3, stride=1, padding=None, norm_layer=nn.BatchNorm2d, activation_layer=nn.ReLU, args=None, logger=None):
+class Conv2dNormActivation(nn.Module):
 
-    layers = [Conv2d(in_channels, out_channels, kernel_size, stride, padding, args=args, logger=logger)]
-    
-    if norm_layer is not None:
-            layers.append(norm_layer(out_channels))
+    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=0, groups=1, norm_layer=nn.BatchNorm2d, activation_layer=nn.ReLU, args=None, logger=None):
+        super().__init__()
+        layers = []
+        layers.append(
+            Conv2d(in_channels, out_channels, kernel_size, stride, padding, groups=groups, args=args, logger=logger)
+        )
+        if norm_layer is not None:
+                layers.append(norm_layer(out_channels))
 
-    if activation_layer is not None:
-            layers.append(activation_layer())
+        if activation_layer is not None:
+                layers.append(activation_layer(inplace=True))
+        
+        self.conv = nn.Sequential(*layers)
 
-    return layers
-
+    def forward(self, x):
+        return self.conv(x)
 
 # necessary for backwards compatibility
 class InvertedResidual(nn.Module):
@@ -77,21 +84,24 @@ class InvertedResidual(nn.Module):
         layers = []
         if expand_ratio != 1:
             # pw
-            layers.extend(
+            layers.append(
                 Conv2dNormActivation(inp, hidden_dim, kernel_size=1, 
-                                     norm_layer=norm_layer, activation_layer=nn.ReLU6, 
+                                     norm_layer=norm_layer, activation_layer=nn.ReLU6,
                                      args=args, logger=logger)
-
             )
         layers.extend(
-                # dw
-                Conv2dNormActivation(hidden_dim, hidden_dim, stride=stride, 
-                                     norm_layer=norm_layer, activation_layer=nn.ReLU6, 
-                                     args=args, logger=logger)
-        )
-        layers.extend(
             [
-
+                # dw
+                Conv2dNormActivation(
+                    hidden_dim,
+                    hidden_dim,
+                    stride=stride,
+                    padding=1,
+                    groups=hidden_dim,
+                    norm_layer=norm_layer,
+                    activation_layer=nn.ReLU6,
+                    args=args, logger=logger
+                ),
                 # pw-linear
                 Conv2d(hidden_dim, oup, 1, 1, 0, args=args, logger=logger),
                 norm_layer(oup),
@@ -157,9 +167,10 @@ class MobileNetV2(nn.Module):
         # building first layer
         input_channel = _make_divisible(input_channel * width_mult, round_nearest)
         self.last_channel = _make_divisible(last_channel * max(1.0, width_mult), round_nearest)
-        features = Conv2dNormActivation(3, input_channel, stride=2, 
+        features = [Conv2dNormActivation(3, input_channel, stride=2, padding=1,
                                  norm_layer=norm_layer, activation_layer=nn.ReLU6, 
                                  args=args, logger=logger)
+        ]
         # building inverted residual blocks
         for t, c, n, s in inverted_residual_setting:
             output_channel = _make_divisible(c * width_mult, round_nearest)
@@ -168,9 +179,9 @@ class MobileNetV2(nn.Module):
                 features.append(block(input_channel, output_channel, stride, expand_ratio=t, norm_layer=norm_layer, args=args, logger=logger))
                 input_channel = output_channel
         # building last several layers
-        features.extend(
+        features.append(
             Conv2dNormActivation(
-                input_channel, self.last_channel, kernel_size=1, 
+                input_channel, self.last_channel, kernel_size=1,
                 norm_layer=norm_layer, activation_layer=nn.ReLU6, 
                 args=args, logger=logger)
         )
@@ -211,15 +222,15 @@ class MobileNetV2(nn.Module):
     
 def _mobilenet(arch, block, pretrained=None, progress=True, args=None, logger=None):
     model = MobileNetV2(block=block, args=args, logger=logger)
-    print(model)
     if pretrained==True:
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress)
         model.load_state_dict(state_dict, strict=False)
     elif pretrained is not None:
         model.load_state_dict(torch.load(pretrained), strict=False)
+    model = model.to(torch.device('cuda'))
     return model
 
 
 def mobilenet_v2(pretrained=None, progress=True, args=None, logger=None):
-    return _mobilenet('mobilenet_v2', InvertedResidual, pretrained, progress, args=args, logger=logger)
+    return _mobilenet('mobilenetv2', InvertedResidual, pretrained, progress, args=args, logger=logger)
